@@ -35,9 +35,13 @@ object DataHelper {
                 personalLevel = parse(2)
                 maxPersonalLevel = personalLevel.maxByOrNull { it[1] }!![1]
             }
-            sheet("params ") {
+            sheet("params") {
                 for (i in this.asIterable()) {
-                    params[i.getCell(0).toString()] = i.getCell(1).numericCellValue.toInt()
+                    var temp = i.getCell(0).toString()
+                    if (temp.last() == ' ') {
+                        temp = temp.dropLast(1)
+                    }
+                    params[temp] = i.getCell(1).numericCellValue.toInt()
                 }
             }
             sheet("Starts ") {
@@ -47,7 +51,7 @@ object DataHelper {
                 startRight = parse(1)
             }
             sheet("MaxFly ") {
-                startRight = parse(1)
+                maxFly = parse(1)
             }
             sheet("RequiredPersonal ") {
                 requiredPersonal = parse()
