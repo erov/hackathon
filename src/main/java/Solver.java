@@ -20,6 +20,17 @@ public class Solver {
 
     private static void firstVacation() {
         final int userCount = helper.getQualified().size();
+
+
+        int sum = 0;
+        for (int i = 0; i < userCount; i++) {
+            if (helper.getQualified().get(i).get(0) == 1) {
+                sum += helper.getMaxFly().get(i).get(0);
+            }
+        }
+        System.out.println(sum);
+
+
         final int nQuals = helper.getParam("nQuals");
         ArrayList<InputEdge> gr = new ArrayList<>();
         final int t = 1 + userCount + nQuals;
@@ -36,8 +47,6 @@ public class Solver {
                 }
             }
         }
-        // крч я спать, сосед пизды дать ща, ща на гит запушу, го в 9 дальше ботать
-        1 / 0
         ArrayList<Emp> emps = new ArrayList<>(0);
         boolean[] done = new boolean[userCount];
         for (int i = 0; i < userCount; i++) {
@@ -61,8 +70,9 @@ public class Solver {
             int[] flow = flowFinder.maxFlow();  // qual -- worked hours
 
             for (int i = 0; i < 10; i++) {
-                System.out.print(flow[i]);
+                System.out.print(flow[i] + " ");
             }
+            System.out.println();
 
             for (Emp e : emps) {
                 if (e.getSl() > l || done[e.getId()]) {
@@ -107,14 +117,36 @@ public class Solver {
     public static void main(String[] args) {
         DataHelper.INSTANCE.init("input.xlsx");
         firstVacation();
-        int totalVacations = 0;
+        System.out.println("result: " + check());
+
+//        int totalVacations = 0;
+//        for (int j = 0; j < helper.getQualified().size(); j++) {
+////                if (chill[i][j] > 0) {
+////                    totalVacations++;
+////                }
+//            for (int i = 0; i < 12; i++) {
+//                if (chill[i][j] > 0 && helper.getQualified().get(i).get(1) == 1) {
+//                    System.out.println(j + " " + (i + 1) + " " + helper.getStart().get(j).get(0));
+//                }
+//            }
+//        }
+//
+//        System.out.println(totalVacations);
+    }
+
+    static boolean check() {
         for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < helper.getQualified().size(); j++) {
-                if (chill[i][j] > 0) {
-                    totalVacations++;
+            for (int j = 0; j < 10; j++) {
+                int def = helper.getRequiredPersonal().get(j).get(i);
+                for (int t = 0; t < 2427; t++) {
+                    if (helper.getQualified().get(t).get(j) == 0) {
+                        continue;
+                    }
+                    def = def - helper.getMaxFly().get(t).get(0) + chill[i][t];
                 }
+                if (def == 0) return false;
             }
         }
-        System.out.println(totalVacations);
+        return true;
     }
 }

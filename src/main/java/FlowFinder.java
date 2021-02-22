@@ -94,7 +94,7 @@ public class FlowFinder {
         int n = g[t].size();
         int[] ans = new int[n];
         for (int i = 0; i < n; i++) {
-            ans[ed.get(g[t].get(i)).getTo() - 1] = ed.get(g[t].get(i)).getFlow();
+            ans[ed.get(g[t].get(i)).getTo() - 1] = ed.get(g[t].get(i) ^ 1).getFlow();
         }
         return ans;
     }
