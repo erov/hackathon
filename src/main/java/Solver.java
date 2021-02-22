@@ -229,15 +229,14 @@ public class Solver {
         extendVacation();
 
 //        int totalVacations = 0, sumVacations = 0;
-//        for (int j = 0; j < helper.getQualified().size(); j++) {
-//            for (int i = 0; i < 12; i++) {
+//        for (int j = 0; j < empCount; j++) {
+//            for (int i = 0; i < nMonths; i++) {
 //                if (chill[i][j] > 0) {
 //                    totalVacations++;
 //                    sumVacations += chill[i][j];
 //                }
 //            }
 //        }
-
 //        System.out.println(totalVacations + " " + sumVacations);
 
         helper.out(chill, empCount);
