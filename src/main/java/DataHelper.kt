@@ -1,5 +1,6 @@
 import com.github.nwillc.poink.PSheet
 import com.github.nwillc.poink.workbook
+import java.io.File
 
 object DataHelper {
     var restPrior: MutableList<MutableList<Int>> = MutableList(0) { MutableList(0) { 0 } }
@@ -11,6 +12,7 @@ object DataHelper {
     var params: MutableMap<String, Int> = mutableMapOf()
     var maxFly: MutableList<MutableList<Int>> = MutableList(0) { MutableList(0) { 0 } }
     var requiredPersonal: MutableList<MutableList<Int>> = MutableList(0) { MutableList(0) { 0 } }
+    var month: MutableList<MutableList<Int>> = MutableList(0) { MutableList(0) { 0 } }
     var maxPersonalLevel: Int = 0
 
     fun init(name: String) {
@@ -56,12 +58,24 @@ object DataHelper {
             sheet("RequiredPersonal ") {
                 requiredPersonal = parse()
             }
+            sheet("Months") {
+                val req = MutableList(0) { mutableListOf<Int>() }
+                for (row in this.asIterable()) {
+                    val temp = MutableList(0) { 0 }
+                    for (i in 1..2) {
+                        temp.add(row.getCell(i).numericCellValue.toInt())
+                    }
+                    req.add(temp)
+                }
+                month = req
+            }
         }
     }
 
     fun getParam(param: String): Int = params[param]!!
 
     fun isQualified(id: Int, j: Int) = qualified[id][j] == 1
+    fun qualificationSum(id: Int) = qualified[id].sum()
 
     private fun PSheet.parse(count: Int = 12): MutableList<MutableList<Int>> {
         val req = MutableList(0) { mutableListOf<Int>() }
@@ -74,4 +88,32 @@ object DataHelper {
         }
         return req
     }
+
+    fun out(chill: Array<IntArray>, empCount: Int) {
+        workbook {
+            sheet("personal_rest") {
+                row(listOf("Сотрудник", "Месяц", "Размер отпуска", "Заявка"))
+                for (i in 0 until empCount) {
+                    var summary = 0
+                    val months = (0 until 12)
+                            .map { chill[it][i] }
+                            .withIndex()
+                            .filter {
+                                summary += it.value
+                                it.value != 0
+                            }
+                            .map { it.index + 1 }
+                    val intersection =
+                            restPrior[i].withIndex().filter { it.value != 0 }.map { it.index + 1  } intersect months
+                    val monthString = buildString {
+                        months.forEach {
+                            append("$it ")
+                        }
+                    }
+                    row(listOf(personalLevel[i][0], monthString, summary, if (intersection.isNotEmpty()) 1 else 0))
+                }
+            }
+        }.write("output.xlsx")
+    }
+
 }
